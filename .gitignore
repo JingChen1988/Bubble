@@ -1,0 +1,38 @@
+# Enable External option in Unity ¡ú Preferences ¡ú Packages ¡ú Repository. (Skip this step in v4.5 and up)
+# Switch to Visible Meta Files in Edit ¡ú Project Settings ¡ú Editor ¡ú Version Control Mode.
+# Switch to Force Text in Edit ¡ú Project Settings ¡ú Editor ¡ú Asset Serialization Mode.
+# =============== #
+# Unity generated #
+# =============== #
+[Tt]emp/
+[Ll]ibrary/metadata
+[Ll]ibrary/ScriptAssemblies
+[Ll]ibrary/ShaderCache
+[Ll]ibrary/UnityAssemblies
+ 
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+[Oo]bj/
+*.svd
+*.userprefs
+/*.csproj
+*.pidb
+*.suo
+/*.sln
+*.user
+*.unityproj
+*.booproj
+*.DotSettings
+ 
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

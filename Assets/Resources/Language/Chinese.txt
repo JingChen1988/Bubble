@@ -1,0 +1,12 @@
+﻿//UI提示
+ExitGame=是否退出游戏？
+TipTask=EVERY CHANGE TO COST [FF9000]100[-] GOLD
+UnlockBowling=恭喜,您已经解锁保龄球-{0}.
+UnlockScene=恭喜,您已经解锁场景-{0}.
+GoldNotEnough=对不起，您的金币不足.
+
+//道具说明
+Help0=点击继续
+Help1=手指横向滑动改变保龄球位置
+Help2=向上滑动将保龄球投出，滑动的速度和方向将影响它的移动轨迹
+Help3=保龄球滚动过程中，可以通过横向滑动改变它的移动轨迹，每球仅操作1次

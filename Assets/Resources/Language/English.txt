@@ -1,0 +1,12 @@
+﻿//UI提示
+ExitGame=Confirm leave the game?
+TipTask=EVERY CHANGE TO COST [FF9000]100[-] GOLD
+UnlockBowling=Congratulations, you've unlocked bowling - the {0}.
+UnlockScene=Congratulations, you've unlocked scene - the {0}.
+GoldNotEnough=Sorry, your gold is not enough.
+
+//帮助说明
+Help0=Tab To Continue
+Help1=Lateral sliding of the fingers to change the position of the bowling
+Help2=Slide up throwing the bowling, moving speed and direction of the sliding track will affect the bowling
+Help3=At this rolling of time, can change the bowling movement trajectory through horizontal sliding, each only 1 times
