@@ -132,6 +132,12 @@ public class SlotTable
         }
     }
 
+    //震动效果
+    void Shake()
+    {
+
+    }
+
     //搜索附近的泡泡（x=行号，y=列号）
     Slot FindSideBubble(Vector2 seat, Direct dir, bool even)
     {
@@ -189,7 +195,6 @@ public class SlotTable
                 Slot tempSlot = slots[i];
                 tempSlot.ToChain();
             }
-
             //坠落
             FallDown();
         }

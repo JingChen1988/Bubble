@@ -51,6 +51,12 @@ public class Slot
     //连锁消除
     public void ToChain()
     {
+        GameObject explode = PoolManager.GetObject(PrefabKey.Explode);
+        explode.SetActive(true);
+        explode.transform.position = Bubble.mTran.position;
+        explode.GetComponent<Animator>().Play("ExplodeAnim");
+        PoolManager.TimingCollect(1, explode);
+
         Bubble.mObj.SetActive(false);
         Bubble.Slot = null;
         Bubble = null;

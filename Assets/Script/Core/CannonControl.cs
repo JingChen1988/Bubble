@@ -13,16 +13,19 @@ public class CannonControl : MonoBehaviour
 
     bool Rotating;//是否在旋转
     Vector2 FireDirect;//开炮方向
-    int FireSpeed = 70;//开炮速度
+    int FireSpeed = 100;//开炮速度
 
     Transform NowBubble;//当前泡泡
     Transform NextBubble;//备用泡泡
 
+    RayPath Path;//投射路径
+
     Vector2 NowPos = new Vector2(3.4f, 0);//当前泡泡位置
     Vector2 NextPos = new Vector2(8, 0);//备用泡泡位置
     Vector2 One = new Vector2(-1, 0);//夹角标量
-    const int AngleMin = 30;//炮口最小角度
-    const int AngleMax = 150;//炮口最大角度
+    const int AngleMin = 20;//炮口最小角度
+    const int AngleMax = 160;//炮口最大角度
+    const float Radius = 1.8f;//碰撞范围
 
     void Start()
     {
@@ -33,15 +36,21 @@ public class CannonControl : MonoBehaviour
 
         SetNowBubble(GetBubble('B'));
         SetNextBubble(GetBubble('A'));
+
+        Path = new RayPath();
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (!Rotating && Input.GetMouseButtonDown(0))
+        {
             Rotating = true;
-        if (Input.GetMouseButtonUp(0))
+            Path.SetVisible(true);
+        }
+        if (Rotating && Input.GetMouseButtonUp(0))
         {
             Rotating = false;
+            Path.SetVisible(false);
             if (NowBubble != null)
             {
                 FireDirect = NowBubble.up;
@@ -49,10 +58,33 @@ public class CannonControl : MonoBehaviour
                 NowBubble = null;
             }
         }
+        //旋转炮口
         RotateMuzzle();
-
+        //投射路径
+        RaycastPath();
         //控制切换泡泡
         if (Input.GetKeyDown(KeyCode.W)) SwapBubble();
+    }
+
+    //投射路径
+    void RaycastPath()
+    {
+        if (Rotating && Time.frameCount % 2 == 0)
+        {
+            Vector2 dir = Muzzle.right;
+            Vector2 start = (Vector2)Muzzle.position + (dir * 10);
+            RaycastHit2D hit = Physics2D.Raycast(start, dir);
+
+            if (hit.collider.CompareTag(Tag.Wall))
+            {
+                Vector2 dir2 = new Vector2(-dir.x, dir.y);
+                Vector2 end = hit.point + dir2 * 50;
+                Path.SetPath(start, hit.point, end);
+            }
+            else
+                Path.SetPath(start, hit.point);
+            Path.ShowPath();
+        }
     }
 
     //旋转炮口
@@ -71,13 +103,6 @@ public class CannonControl : MonoBehaviour
         }
     }
 
-    //泡泡反弹
-    public void InverseDirect(Transform shell)
-    {
-        FireDirect = new Vector2(-FireDirect.x, FireDirect.y);
-        Fire(shell, false);
-    }
-
     //开炮
     void Fire(Transform shell, bool isFill = true)
     {
@@ -91,6 +116,13 @@ public class CannonControl : MonoBehaviour
 
         //填充泡泡
         if (isFill) StartCoroutine(FillBubble());
+    }
+
+    //泡泡反弹
+    public void InverseDirect(Transform shell)
+    {
+        FireDirect = new Vector2(-FireDirect.x, FireDirect.y);
+        Fire(shell, false);
     }
 
     //切换泡泡
@@ -128,6 +160,7 @@ public class CannonControl : MonoBehaviour
         Bubble bubble = obj.GetComponent<Bubble>();
         bubble.InitComponent();
         bubble.InitBubble(id);
+        bubble.Collider.radius = Radius;
         return obj.transform;
     }
 

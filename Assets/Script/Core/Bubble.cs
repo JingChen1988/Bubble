@@ -9,7 +9,7 @@ public class Bubble : MonoBehaviour
     public Transform mTran;
     public GameObject mObj;
     public Rigidbody2D Ridid;
-    public Collider2D Collider;
+    public CircleCollider2D Collider;
     public SpriteRenderer Sprite;
     #endregion
 
@@ -17,8 +17,9 @@ public class Bubble : MonoBehaviour
     public bool isAbsorb;//是否吸附
     public Slot Slot;//泡泡所在槽位
 
-    const int AbsorbSpeed = 15;//吸附速度
+    const int AbsorbSpeed = 20;//吸附速度
     const float AbsorbMinDis = .2f;//吸附最小距离
+    const float Radius = 2.3f;//碰撞范围
 
     #region 初始化
     public void InitComponent()
@@ -27,7 +28,7 @@ public class Bubble : MonoBehaviour
         mTran = transform;
         mObj = gameObject;
         Ridid = mTran.GetComponent<Rigidbody2D>();
-        Collider = mTran.GetComponent<Collider2D>();
+        Collider = mTran.GetComponent<CircleCollider2D>();
         Sprite = mTran.GetComponent<SpriteRenderer>();
     }
 
@@ -44,7 +45,11 @@ public class Bubble : MonoBehaviour
     //碰撞处理
     void OnCollisionEnter2D(Collision2D coll)
     {
+        if (isAbsorb) return;
         Transform other = coll.transform;
+
+        Debug.Log(name + ">>" + Ridid.velocity.ToString("f8"));
+        Debug.DrawRay(coll.contacts[0].point, Ridid.velocity, Color.red, 60);
 
         if (other.CompareTag(Tag.Wall))
         {//1.碰撞墙壁反弹
@@ -55,8 +60,10 @@ public class Bubble : MonoBehaviour
             isAbsorb = true;
             SlotTable.Instance.AbsorbTop(this);
         }
-        else if (!isAbsorb && other.CompareTag(Tag.Bubble))
+        else if (other.CompareTag(Tag.Bubble))
         {//3.碰撞泡泡吸附
+
+
             isAbsorb = true;
             Slot slot = other.GetComponent<Bubble>().Slot;
             SlotTable.Instance.Absorb(slot, this);
@@ -79,6 +86,8 @@ public class Bubble : MonoBehaviour
             yield return 0;
         }
         mTran.localPosition = to;
+        Collider.radius = Radius;
+
         //进行连锁反应
         SlotTable.Instance.ChainBubble(Slot);
     }

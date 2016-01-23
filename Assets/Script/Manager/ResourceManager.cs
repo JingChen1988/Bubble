@@ -16,7 +16,9 @@ public class ResourceManager : MonoBehaviour
         {
             GameObject[] other = Resources.LoadAll<GameObject>("Prefabs");
             PrefabList.Bubble = other[0];
-            PrefabList.SpriteManager = other[1];
+            PrefabList.Circle = other[1];
+            PrefabList.Explode = other[2];
+            PrefabList.SpriteManager = other[3];
 
             Resources.UnloadUnusedAssets();
 
@@ -50,6 +52,7 @@ public class ResourceManager : MonoBehaviour
         switch (key)
         {
             case PrefabKey.Bubble: obj = PrefabList.Bubble; break;
+            case PrefabKey.Explode: obj = PrefabList.Explode; break;
         }
         return obj;
     }
@@ -72,6 +75,8 @@ public class PrefabList
 {
     public static GameObject SpriteManager;
     public static GameObject Bubble;
+    public static GameObject Explode;
+    public static GameObject Circle;
 
     public class UI
     {
@@ -84,6 +89,7 @@ public class PrefabList
 public class PrefabKey
 {
     public const byte Bubble = 0;
+    public const byte Explode = 1;
 
     public class UI
     {
