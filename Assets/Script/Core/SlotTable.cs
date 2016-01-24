@@ -13,6 +13,7 @@ public class SlotTable
     #region 常量
     Direct[] Directs = { Direct.Left, Direct.Right, Direct.LeftDown, Direct.RightDown, Direct.LeftUp, Direct.RightUp };//方向集合
     const int ChainCount = 3;//连锁最低数量
+    const int SpreadRange = 15;//震动传播范围
     #endregion
 
     public SlotTable()
@@ -112,11 +113,11 @@ public class SlotTable
         {
             Direct dir = Directs[i];
             Slot temp = FindSideBubble(location, dir, even);
-            if (temp != null)
+            if (temp != null && temp.Bubble == null)
             {
                 float dis = Vector2.Distance(pos, temp.Position);
-                //空槽&距离最短
-                if (temp.Bubble == null && dis < DistanceMin)
+                //距离最短
+                if (dis < DistanceMin)
                 {
                     DistanceMin = dis;
                     targetSlot = temp;
@@ -129,13 +130,48 @@ public class SlotTable
         {
             bubble.mTran.parent = SlotContain;
             bubble.AbsorbAction(targetSlot);
+            Spread(bubble, targetSlot);
         }
     }
 
     //震动效果
-    void Shake()
+    void Spread(Bubble bubble, Slot slot)
     {
+        Vector2 point = bubble.mTran.localPosition;
+        Vector2 location = slot.Location;
+        bool even = slot.Row % 2 == 0;
 
+        for (int i = 0, len = Directs.Length; i < len; i++)
+        {
+            Direct dir = Directs[i];
+            Slot temp = FindSideBubble(location, dir, even);
+            if (temp != null && temp.Bubble != null && !temp.Bubble.isShake)
+            {
+                float dis = Vector2.Distance(point, temp.Position);
+                //距离限制
+                if (dis < SpreadRange)
+                {
+                    temp.Bubble.ShakeAction(bubble);
+                    Spread(bubble, temp);
+                }
+            }
+        }
+    }
+
+    //检查震动是否结束
+    public bool ShakeFinish()
+    {
+        for (int i = 0, len = Tables.Length; i < len; i++)
+        {
+            Slot[] solts = Tables[i];
+            for (int j = 0, len2 = solts.Length; j < len2; j++)
+            {
+                Slot slot = solts[j];
+                if (slot.Bubble != null && slot.Bubble.isShake)
+                    return false;
+            }
+        }
+        return true;
     }
 
     //搜索附近的泡泡（x=行号，y=列号）
@@ -216,6 +252,7 @@ public class SlotTable
         }
     }
 
+    //坠落
     void FallDown()
     {
         Slot[] tops = Tables[0];

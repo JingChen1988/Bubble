@@ -17,6 +17,7 @@ public class Slot
     const float INITX_ODD = -18.4f;//初始x-奇数
     const float WIDTH = 4.6f;//宽度间隔
     const float HEIGHT = 4f;//高度间隔
+    const float FALL_FORCE = 10;
     #endregion
 
     public Slot(Transform contain, byte r, byte c, char id = NULL)
@@ -65,10 +66,10 @@ public class Slot
     //断开坠落
     public void ToFall()
     {
-        Bubble.Collider.enabled = false;
         Bubble.Ridid.isKinematic = false;
-        Bubble.Ridid.gravityScale = 1;
-        PoolManager.TimingCollect(2f, Bubble.mObj);
+        Bubble.Ridid.gravityScale = 4;
+        Bubble.Ridid.AddForce(new Vector2(Random.Range(-FALL_FORCE, FALL_FORCE),
+            Random.Range(-FALL_FORCE, FALL_FORCE)), ForceMode2D.Impulse);
         Bubble.Slot = null;
         Bubble = null;
     }

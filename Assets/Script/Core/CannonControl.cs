@@ -107,6 +107,7 @@ public class CannonControl : MonoBehaviour
     void Fire(Transform shell, bool isFill = true)
     {
         shell.parent = null;
+        shell.GetComponent<Collider2D>().enabled = true;
         Rigidbody2D body = shell.GetComponent<Rigidbody2D>();
         body.isKinematic = false;
         //泡泡发射，并限制速度
@@ -161,6 +162,7 @@ public class CannonControl : MonoBehaviour
         bubble.InitComponent();
         bubble.InitBubble(id);
         bubble.Collider.radius = Radius;
+        bubble.Collider.enabled = false;
         return obj.transform;
     }
 

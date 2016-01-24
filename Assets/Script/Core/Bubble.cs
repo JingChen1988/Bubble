@@ -14,12 +14,25 @@ public class Bubble : MonoBehaviour
     #endregion
 
     public char ID;//对应泡泡标识，字符"-"代表空
-    public bool isAbsorb;//是否吸附
     public Slot Slot;//泡泡所在槽位
+
+    #region 吸附
+    public bool isAbsorb;//是否吸附
 
     const int AbsorbSpeed = 20;//吸附速度
     const float AbsorbMinDis = .2f;//吸附最小距离
     const float Radius = 2.3f;//碰撞范围
+    #endregion
+
+    #region 震动
+    public bool isShake;//是否震动
+
+    const int ScopeBase = 3;//幅度基数
+    const int ShakeMax = 5;//最大值
+    const float ShakeDelay = .05f;//回复延迟
+    const int ShakeSpeed = 15;//速度
+    const float ShakeMinDis = .1f;//最小距离
+    #endregion
 
     #region 初始化
     public void InitComponent()
@@ -45,11 +58,13 @@ public class Bubble : MonoBehaviour
     //碰撞处理
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if (isAbsorb) return;
         Transform other = coll.transform;
+        if (other.CompareTag(Tag.Bottom))
+        {//4.碰撞地面消失
+            mObj.SetActive(false);
+        }
 
-        Debug.Log(name + ">>" + Ridid.velocity.ToString("f8"));
-        Debug.DrawRay(coll.contacts[0].point, Ridid.velocity, Color.red, 60);
+        if (isAbsorb) return;
 
         if (other.CompareTag(Tag.Wall))
         {//1.碰撞墙壁反弹
@@ -62,11 +77,9 @@ public class Bubble : MonoBehaviour
         }
         else if (other.CompareTag(Tag.Bubble))
         {//3.碰撞泡泡吸附
-
-
             isAbsorb = true;
-            Slot slot = other.GetComponent<Bubble>().Slot;
-            SlotTable.Instance.Absorb(slot, this);
+            Bubble bubble = other.GetComponent<Bubble>();
+            SlotTable.Instance.Absorb(bubble.Slot, this);
         }
     }
 
@@ -78,6 +91,7 @@ public class Bubble : MonoBehaviour
         Vector2 to = Slot.Position;
         Ridid.isKinematic = true;
         Slot.Bubble = this;
+        //吸附动画
         while (true)
         {
             mTran.localPosition = Vector2.Lerp(mTran.localPosition, to, Time.deltaTime * AbsorbSpeed);
@@ -88,7 +102,49 @@ public class Bubble : MonoBehaviour
         mTran.localPosition = to;
         Collider.radius = Radius;
 
+        //检查震动是否结束
+        while (true)
+        {
+            if (SlotTable.Instance.ShakeFinish()) break;
+            yield return new WaitForSeconds(ShakeDelay);
+        }
+
         //进行连锁反应
         SlotTable.Instance.ChainBubble(Slot);
+    }
+
+    //泡泡震动动画
+    public void ShakeAction(Bubble bubble) { StartCoroutine(Shake(bubble)); }
+    IEnumerator Shake(Bubble bubble)
+    {
+        isShake = true;
+        Vector2 dir = mTran.position - bubble.mTran.position;//计算方向
+        float scope = ScopeBase / dir.magnitude;//计算幅度，距离越远，幅度越小
+        if (scope > ShakeMax) scope = ShakeMax;//限制幅度
+        Vector2 from = Slot.Position;//起始位置
+        Vector2 to = from + (dir.normalized * scope);//震动位置
+
+        //震动
+        while (true)
+        {
+            mTran.localPosition = Vector2.Lerp(mTran.localPosition, to, Time.deltaTime * ShakeSpeed);
+            float dis = Vector2.Distance(mTran.localPosition, to);
+            if (dis <= ShakeMinDis) break;
+            yield return 0;
+        }
+
+        //归位
+        while (true)
+        {
+            mTran.localPosition = Vector2.Lerp(mTran.localPosition, from, Time.deltaTime * ShakeSpeed);
+            float dis = Vector2.Distance(mTran.localPosition, from);
+            if (dis <= ShakeMinDis) break;
+            yield return 0;
+        }
+        mTran.localPosition = from;
+
+        //状态回复
+        yield return new WaitForSeconds(ShakeDelay);
+        isShake = false;
     }
 }
