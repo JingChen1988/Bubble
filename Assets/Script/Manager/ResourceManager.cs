@@ -60,10 +60,10 @@ public class ResourceManager : MonoBehaviour
     static GameObject GetObject(string key)
     {
         GameObject obj = null;
-        switch (key)
-        {
+        //switch (key)
+        //{
 
-        }
+        //}
         return obj;
     }
 }

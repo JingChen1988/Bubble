@@ -10,7 +10,7 @@ public class Analyzer : MonoBehaviour
     const float MB = 1024f * 1024f;
 
     #region 帧数
-    public int TargetFrameRate = 40;//目标帧数
+    public int TargetFrameRate = 60;//目标帧数
     int FPSFrame;//总帧数
     float FPSTime;//总时间
     float FrameRate;//帧数

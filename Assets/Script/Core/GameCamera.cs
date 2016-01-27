@@ -19,6 +19,11 @@ public class GameCamera : MonoBehaviour
 
     void Start()
     {
+        Resize();
+    }
+
+    void Resize()
+    {
         devHeight = Height / Pixels;
         devWidth = Width / Pixels;
         Cam = GetComponent<Camera>();

@@ -1,24 +1,27 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class GSM : MonoBehaviour
 {
+    public static GSM Instance;
 
-    public SlotTable Table;
+    SlotTable SlotTable;
+    CannonCtl CannonCtl;
 
     void Start()
     {
-        Table = new SlotTable();
-        //Camera.main.orthographicSize = Screen.height / 20f;
+        Instance = this;
+        SlotTable = SlotTable.Instance;
+        CannonCtl = CannonCtl.Instance;
+        //忽略碰撞
+        Physics2D.IgnoreLayerCollision(Layer.Bubble, Layer.BubbleFall);
+        Physics2D.IgnoreLayerCollision(Layer.Bubble, Layer.Ground);
+        Physics2D.IgnoreLayerCollision(Layer.BubbleFall, Layer.BubbleFall);
+
+        StartCoroutine(SlotTable.ShowTable());
     }
 
-    void Update()
+    public void ShowTableFinish()
     {
-
-    }
-
-    void OnGUI()
-    {
-        if (GUILayout.Button("Load", GUILayout.Width(120), GUILayout.Height(80))) Application.LoadLevel(0);
+        StartCoroutine(CannonCtl.InitShell());
     }
 }

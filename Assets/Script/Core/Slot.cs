@@ -2,8 +2,7 @@
 //泡泡槽
 public class Slot
 {
-    //对应泡泡标识，字符"-"代表空
-    public char ID { get { return Bubble ? Bubble.ID : NULL; } }
+    public char ID { get { return Bubble ? Bubble.ID : NULL; } }//对应泡泡标识，字符"-"代表空
     public byte Row;//行号，0开始
     public byte Column;//列号，0开始
     public Vector2 Location { get { return new Vector2(Row, Column); } }//位置
@@ -11,13 +10,12 @@ public class Slot
     public Bubble Bubble;//泡泡对象
 
     #region 常量
-    const char NULL = '-';//空标识
+    public const char NULL = '-';//空标识
     const float INITY = -2.3f;//初始y
     const float INITX_EVEN = -20.7f;//初始x-偶数
     const float INITX_ODD = -18.4f;//初始x-奇数
     const float WIDTH = 4.6f;//宽度间隔
     const float HEIGHT = 4f;//高度间隔
-    const float FALL_FORCE = 10;
     #endregion
 
     public Slot(Transform contain, byte r, byte c, char id = NULL)
@@ -41,7 +39,8 @@ public class Slot
         Transform BubbleTran = obj.transform;
         BubbleTran.parent = contain;
         BubbleTran.localPosition = Position;
-        //初始化
+        BubbleTran.localScale = Vector2.zero;//用于缩放
+        //初始化泡泡
         Bubble = BubbleTran.GetComponent<Bubble>();
         Bubble.InitComponent();
         Bubble.InitBubble(id);
@@ -52,25 +51,14 @@ public class Slot
     //连锁消除
     public void ToChain()
     {
-        GameObject explode = PoolManager.GetObject(PrefabKey.Explode);
-        explode.SetActive(true);
-        explode.transform.position = Bubble.mTran.position;
-        explode.GetComponent<Animator>().Play("ExplodeAnim");
-        PoolManager.TimingCollect(1, explode);
-
-        Bubble.mObj.SetActive(false);
-        Bubble.Slot = null;
+        Bubble.ToChain();
         Bubble = null;
     }
 
     //断开坠落
     public void ToFall()
     {
-        Bubble.Ridid.isKinematic = false;
-        Bubble.Ridid.gravityScale = 4;
-        Bubble.Ridid.AddForce(new Vector2(Random.Range(-FALL_FORCE, FALL_FORCE),
-            Random.Range(-FALL_FORCE, FALL_FORCE)), ForceMode2D.Impulse);
-        Bubble.Slot = null;
+        Bubble.ToFall();
         Bubble = null;
     }
 }

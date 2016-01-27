@@ -1,11 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections;
-
+/// <summary>
+/// 图集管理器
+/// </summary>
 public class SpriteManager : MonoBehaviour
 {
     static SpriteManager Instance;
-    //精灵集合
-    public Sprite[] SpriteList;
+
+    public Sprite[] SpriteList;//精灵集合
+
+    #region 图层
+    public const int Bottom = -1;
+    public const int Bubble = 2;
+    public const int Top = 4;
+    #endregion
 
     public Sprite GetSprite(string name)
     {
@@ -25,9 +32,10 @@ public class SpriteManager : MonoBehaviour
         return sprite;
     }
 
+    //获取管理器实例
     public static SpriteManager GetInstance()
     {
-        if (Instance == null) Instance = PrefabList.SpriteManager.GetComponent<SpriteManager>();
+        Instance = Instance ?? PrefabList.SpriteManager.GetComponent<SpriteManager>();
         return Instance;
     }
 }
